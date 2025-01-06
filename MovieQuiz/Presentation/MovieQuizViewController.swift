@@ -1,6 +1,7 @@
 import UIKit
 
 // MARK: - Models
+
 private struct QuizQuestion {
     let image: String
     let text: String
@@ -20,18 +21,22 @@ private struct QuizResultsViewModel {
 }
 
 // MARK: - Constants
+
 private enum Constants {
     static let borderWidth: CGFloat = 8
     static let answerDelay: TimeInterval = 1.0
 }
 
 final class MovieQuizViewController: UIViewController {
+
     // MARK: - IB Outlets
+
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     
     // MARK: - Private Properties
+
     private let questions: [QuizQuestion] = [
         QuizQuestion(
             image: "The Godfather",
@@ -79,6 +84,7 @@ final class MovieQuizViewController: UIViewController {
     
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
+    private var isButtonEnabled: Bool = false
     
     private enum GameStats {
         static var rounds: Int = 0
@@ -87,6 +93,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -97,15 +104,23 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // MARK: - IB Actions
+
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        showAnswerResult(isCorrect: !questions[currentQuestionIndex].correctAnswer)
+        if isButtonEnabled {
+            showAnswerResult(isCorrect: !questions[currentQuestionIndex].correctAnswer)
+            isButtonEnabled = false
+        }
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        showAnswerResult(isCorrect: questions[currentQuestionIndex].correctAnswer)
+        if isButtonEnabled {
+            showAnswerResult(isCorrect: questions[currentQuestionIndex].correctAnswer)
+            isButtonEnabled = false
+        }
     }
     
     // MARK: - Private Methods / Utility
+
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
@@ -120,6 +135,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // MARK: Private Methods / Display
+
     private func displayQuestion(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
@@ -149,6 +165,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // MARK: Private Methods / Logic
+
     private func showCurrentQuestion() {
         guard currentQuestionIndex >= 0, currentQuestionIndex < questions.count else {
             print("currentQuestionIndex is out of bounds: `\(currentQuestionIndex)` with maximum `\(questions.count)`")
@@ -158,6 +175,7 @@ final class MovieQuizViewController: UIViewController {
         let viewModel = convert(model: nextQuestion)
         
         displayQuestion(quiz: viewModel)
+        isButtonEnabled = true
     }
     
     private func showAnswerResult(isCorrect: Bool) {
