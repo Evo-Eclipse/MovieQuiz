@@ -136,40 +136,40 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         correctAnswers += isCorrect ? 1 : 0
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.showNextQuestionOrResults()
+            self?.showNextQuestionOrResults()
         }
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
-            // Сохраняем данные о текущем раунде в статистике
-            statisticService.store(correct: correctAnswers, total: questionsAmount)
-            
-            // Достаём необходимые данные из статистики
-            let bestGame = statisticService.bestGame
-            let gamesCount = statisticService.gamesCount
-            let totalAccuracy = statisticService.totalAccuracy
-
-            let bestGameDate = dateFormatter.string(from: bestGame.date)
-            
-            let finals: String = """
-            Ваш результат: \(correctAnswers)/\(questionsAmount)
-            Количество сыгранных квизов: \(gamesCount)
-            Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGameDate))
-            Средняя точность: \(String(format: "%.2f", totalAccuracy))%
-            """
-            
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: finals,
-                buttonText: "Сыграть ещё раз"
-            )
-            displayResults(quiz: viewModel)
-        } else {
+        guard currentQuestionIndex == questionsAmount - 1 else {
             currentQuestionIndex += 1
             showCurrentQuestion()
+            return
         }
+        
+        // Сохраняем данные о текущем раунде в статистике
+        statisticService.store(correct: correctAnswers, total: questionsAmount)
+        
+        // Достаём необходимые данные из статистики
+        let bestGame = statisticService.bestGame
+        let gamesCount = statisticService.gamesCount
+        let totalAccuracy = statisticService.totalAccuracy
+        
+        let bestGameDate = dateFormatter.string(from: bestGame.date)
+        
+        let finals: String = """
+        Ваш результат: \(correctAnswers)/\(questionsAmount)
+        Количество сыгранных квизов: \(gamesCount)
+        Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGameDate))
+        Средняя точность: \(String(format: "%.2f", totalAccuracy))%
+        """
+        
+        let viewModel = QuizResultsViewModel(
+            title: "Этот раунд окончен!",
+            text: finals,
+            buttonText: "Сыграть ещё раз"
+        )
+        displayResults(quiz: viewModel)
     }
 }
 
