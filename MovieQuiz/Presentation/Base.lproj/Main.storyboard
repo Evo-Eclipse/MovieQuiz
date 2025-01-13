@@ -60,7 +60,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GUg-mk-KuP" userLabel="Question Label">
                                         <rect key="frame" x="0.0" y="624.5" width="374" height="99.5"/>
                                         <string key="text">Рейтинг этого фильма
-меньше чем 5?</string>
+меньше чем 7?</string>
                                         <fontDescription key="fontDescription" name="YSDisplay-Bold" family="YS Display" pointSize="23"/>
                                         <color key="textColor" name="YP White (iOS)"/>
                                         <nil key="highlightedColor"/>
@@ -123,6 +123,9 @@
                                     <constraint firstItem="VCY-sS-gJn" firstAttribute="leading" secondItem="9eT-4b-okK" secondAttribute="leading" id="wZP-ea-tPX"/>
                                 </constraints>
                             </stackView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="4vN-Fh-moE">
+                                <rect key="frame" x="197" y="438" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black (iOS)"/>
@@ -131,9 +134,12 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="9eT-4b-okK" secondAttribute="bottom" id="4Yr-gA-RRH"/>
                             <constraint firstItem="9eT-4b-okK" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="BfM-wl-1qt"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="9eT-4b-okK" secondAttribute="trailing" constant="20" id="DpE-L7-igy"/>
+                            <constraint firstItem="4vN-Fh-moE" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hAc-rp-mzg"/>
+                            <constraint firstItem="4vN-Fh-moE" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="jWM-sD-mua"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="4vN-Fh-moE" id="PaP-0h-W8A"/>
                         <outlet property="counterLabel" destination="Wgy-aU-2ys" id="aWX-Yw-CEe"/>
                         <outlet property="imageView" destination="VCY-sS-gJn" id="Ydz-Gy-MG3"/>
                         <outlet property="textLabel" destination="GUg-mk-KuP" id="WRs-R8-5xZ"/>
