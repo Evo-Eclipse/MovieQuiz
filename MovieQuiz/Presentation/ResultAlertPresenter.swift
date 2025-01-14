@@ -15,7 +15,7 @@ final class ResultAlertPresenter {
             message: model.message,
             preferredStyle: .alert
         )
-        
+
         let action = UIAlertAction(
             title: model.buttonText,
             style: .default
@@ -23,10 +23,9 @@ final class ResultAlertPresenter {
             // по нажатию на кнопку выполняется замыкание
             model.completion?()
         }
-        
+
         alert.addAction(action)
-        
+
         viewController?.present(alert, animated: true)
     }
 }
-

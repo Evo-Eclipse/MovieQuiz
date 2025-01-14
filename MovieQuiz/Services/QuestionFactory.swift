@@ -77,11 +77,11 @@ final class QuestionFactory: QuestionFactoryProtocol {
             let correctAnswer = rating > 7
 
             let question = QuizQuestion(
-                image: imageData,
+                imageData: imageData,
                 text: text,
                 correctAnswer: correctAnswer
             )
-            
+
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.delegate?.didReceiveNextQuestion(question: question)
