@@ -9,7 +9,7 @@ final class ResultAlertPresenter {
         self.viewController = viewController
     }
 
-    func showAlert(model: AlertModel) {
+    func showAlert(model: AlertModel, type: AlertType) {
         let alert = UIAlertController(
             title: model.title,
             message: model.message,
@@ -20,12 +20,29 @@ final class ResultAlertPresenter {
             title: model.buttonText,
             style: .default
         ) { _ in
-            // по нажатию на кнопку выполняется замыкание
+            // По нажатию на кнопку выполняется замыкание
             model.completion?()
         }
 
         alert.addAction(action)
 
+        // Устанавливаем Accessibility Identifier для алерта
+        alert.view.accessibilityIdentifier = type.accessibilityIdentifier
+
         viewController?.present(alert, animated: true)
+    }
+}
+
+enum AlertType {
+    case gameResult
+    case networkError
+
+    var accessibilityIdentifier: String {
+        switch self {
+        case .gameResult:
+            return "Result Alert"
+        case .networkError:
+            return "Network Error Alert"
+        }
     }
 }

@@ -128,7 +128,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
 
         // Показываем алерт через ResultAlertPresenter
-        resultAlertPresenter?.showAlert(model: model)
+        resultAlertPresenter?.showAlert(model: model, type: .gameResult)
     }
 
     private func showLoadingIndicator() {
@@ -157,7 +157,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.questionFactory?.requestNextQuestion()
         }
 
-        resultAlertPresenter?.showAlert(model: model)
+        resultAlertPresenter?.showAlert(model: model, type: .networkError)
     }
 
     // MARK: Private Methods / Logic
