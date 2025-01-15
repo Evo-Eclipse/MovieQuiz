@@ -12,11 +12,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Private Properties
 
     private let dateFormatter = DateFormatter()
-    private let questionsAmount: Int = 10
 
     private let statisticService: StatisticServiceProtocol = StatisticService()
+    private let presenter = MovieQuizPresenter()
 
-    private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
 
     private var questionFactory: QuestionFactoryProtocol?
@@ -52,7 +51,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         guard let question = question else { return }
 
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
 
         DispatchQueue.main.async { [weak self] in
             self?.displayQuestion(quiz: viewModel)
@@ -80,14 +79,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     // MARK: - Private Methods / Utility
-
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            image: UIImage(data: model.imageData) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
-        )
-    }
 
     private func resetBorder() {
         imageView.layer.borderWidth = 0
@@ -121,7 +112,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             // Действие по нажатию на кнопку
             guard let self = self else { return }
 
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswers = 0
 
             self.questionFactory?.requestNextQuestion()
@@ -151,7 +142,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         ) { [weak self] in
             guard let self = self else { return }
 
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswers = 0
 
             self.questionFactory?.requestNextQuestion()
@@ -163,6 +154,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: Private Methods / Logic
 
     private func showCurrentQuestion() {
+        /*
         guard currentQuestionIndex >= 0, currentQuestionIndex < questionsAmount
         else {
             print(
@@ -170,7 +162,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             )
             return
         }
-
+        */
         questionFactory?.requestNextQuestion()
     }
 
@@ -186,14 +178,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func showNextQuestionOrResults() {
-        guard currentQuestionIndex == questionsAmount - 1 else {
-            currentQuestionIndex += 1
+        guard self.presenter.isLastQuestion() else {
+            self.presenter.switchToNextQuestion()
             showCurrentQuestion()
             return
         }
 
         // Сохраняем данные о текущем раунде в статистике
-        statisticService.store(correct: correctAnswers, total: questionsAmount)
+        statisticService.store(correct: correctAnswers, total: self.presenter.questionsAmount)
 
         // Достаём необходимые данные из статистики
         let bestGame = statisticService.bestGame
@@ -203,7 +195,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let bestGameDate = dateFormatter.string(from: bestGame.date)
 
         let finals: String = """
-            Ваш результат: \(correctAnswers)/\(questionsAmount)
+            Ваш результат: \(correctAnswers)/\(self.presenter.questionsAmount)
             Количество сыгранных квизов: \(gamesCount)
             Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGameDate))
             Средняя точность: \(String(format: "%.2f", totalAccuracy))%
