@@ -19,8 +19,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var correctAnswers: Int = 0
 
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     private var resultAlertPresenter: ResultAlertPresenter?
+    private var currentQuestion: QuizQuestion?
 
     private var isButtonEnabled: Bool = false
 
@@ -33,6 +33,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        presenter.viewController = self
 
         questionFactory = QuestionFactory(
             moviesLoader: MoviesLoader(), delegate: self)
@@ -64,16 +66,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         if isButtonEnabled {
-            guard let currentQuestion = currentQuestion else { return }
-            showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
+            presenter.currentQuestion = currentQuestion
+            presenter.noButtonClicked()
             isButtonEnabled = false
         }
     }
 
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         if isButtonEnabled {
-            guard let currentQuestion = currentQuestion else { return }
-            showAnswerResult(isCorrect: currentQuestion.correctAnswer)
+            presenter.currentQuestion = currentQuestion
+            presenter.yesButtonClicked()
             isButtonEnabled = false
         }
     }
@@ -166,7 +168,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory?.requestNextQuestion()
     }
 
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         imageView.layer.borderWidth = Constants.borderWidth
         imageView.layer.borderColor =
             (isCorrect ? UIColor.ypGreen : UIColor.ypRed).cgColor
@@ -185,7 +187,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
 
         // Сохраняем данные о текущем раунде в статистике
-        statisticService.store(correct: correctAnswers, total: self.presenter.questionsAmount)
+        statisticService.store(
+            correct: correctAnswers, total: self.presenter.questionsAmount)
 
         // Достаём необходимые данные из статистики
         let bestGame = statisticService.bestGame
