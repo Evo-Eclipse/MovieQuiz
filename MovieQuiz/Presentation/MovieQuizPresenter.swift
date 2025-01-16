@@ -2,7 +2,7 @@ import UIKit
 
 final class MovieQuizPresenter: QuestionFactoryDelegate {
 
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
     private var currentQuestion: QuizQuestion?
 
     private var questionFactory: QuestionFactoryProtocol?
@@ -16,7 +16,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var isInteractionAllowed: Bool = false
 
     init(
-        viewController: MovieQuizViewController,
+        viewController: MovieQuizViewControllerProtocol,
         statisticService: StatisticServiceProtocol = StatisticService()
     ) {
         self.viewController = viewController
