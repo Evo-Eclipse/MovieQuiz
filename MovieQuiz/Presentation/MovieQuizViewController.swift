@@ -65,15 +65,10 @@ final class MovieQuizViewController: UIViewController {
         resultAlertPresenter?.showAlert(model: model, type: .gameResult)
     }
 
-    func showAnswerResult(isCorrect: Bool) {
+    func highlightImageBorder(isCorrectAnswer: Bool) {
         imageView.layer.borderWidth = Constants.borderWidth
         imageView.layer.borderColor =
-            (isCorrect ? UIColor.ypGreen : UIColor.ypRed).cgColor
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.presenter?.showNextQuestionOrResults()
-        }
+            (isCorrectAnswer ? UIColor.ypGreen : UIColor.ypRed).cgColor
     }
 
     // MARK: - Methods / Utility

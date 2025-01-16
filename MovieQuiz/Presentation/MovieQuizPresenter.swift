@@ -13,7 +13,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
 
-    private var isButtonEnabled: Bool = false
+    private var isInteractionAllowed: Bool = false
 
     init(
         viewController: MovieQuizViewController,
@@ -32,8 +32,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     // MARK: - Public Methods / QuestionFactoryDelegate
 
     func didLoadDataFromServer() {
-        // Данные (фильмы) загрузились
-        // Скрываем индикатор, просим следующий вопрос
         viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
@@ -55,7 +53,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             self?.viewController?.show(quiz: viewModel)
         }
 
-        isButtonEnabled = true
+        isInteractionAllowed = true
     }
 
     // MARK: - Public Methods / Utility
@@ -93,15 +91,15 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
 
     private func didAnswer(isYes: Bool) {
-        guard isButtonEnabled else { return }
+        guard isInteractionAllowed else { return }
         guard let currentQuestion = currentQuestion else { return }
 
         let isCorrect = (currentQuestion.correctAnswer == isYes)
 
         didAnswer(isCorrectAnswer: isCorrect)
-        viewController?.showAnswerResult(isCorrect: isCorrect)
+        showAnswerResult(isCorrect: isCorrect)
 
-        isButtonEnabled = false
+        isInteractionAllowed = false
     }
 
     func didAnswer(isCorrectAnswer: Bool) {
@@ -109,6 +107,15 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
 
     // MARK: - Methods / Quiz Logic
+
+    func showAnswerResult(isCorrect: Bool) {
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            self.showNextQuestionOrResults()
+        }
+    }
 
     func showNextQuestionOrResults() {
         guard isLastQuestion() else {
