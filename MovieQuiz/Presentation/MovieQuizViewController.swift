@@ -35,11 +35,11 @@ final class MovieQuizViewController: UIViewController,
     // MARK: - IB Actions
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        presenter?.noButtonClicked()
+        presenter?.didAnswer(isYes: false)
     }
 
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        presenter?.yesButtonClicked()
+        presenter?.didAnswer(isYes: true)
     }
 
     // MARK: - Methods / Quiz

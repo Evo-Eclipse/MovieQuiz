@@ -8,7 +8,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private var statisticService: StatisticServiceProtocol?
 
-    let questionsAmount: Int = 10
+    private let questionsAmount: Int = 10
 
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
@@ -24,7 +24,10 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
 
         // Создаём фабрику вопросов и «включаем» её
         questionFactory = QuestionFactory(
-            moviesLoader: MoviesLoader(), delegate: self)
+            moviesLoader: MoviesLoader(),
+            delegate: self
+        )
+
         viewController.showLoadingIndicator()
         questionFactory?.loadData()
     }
@@ -56,7 +59,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         isInteractionAllowed = true
     }
 
-    // MARK: - Public Methods / Utility
+    // MARK: - Methods / Utility
+
+    func restartGame() {
+        currentQuestionIndex = 0
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
+    }
 
     func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
@@ -66,33 +75,18 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         )
     }
 
-    func isLastQuestion() -> Bool {
+    private func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
 
-    func restartGame() {
-        currentQuestionIndex = 0
-        correctAnswers = 0
-        questionFactory?.requestNextQuestion()
-    }
-
-    func switchToNextQuestion() {
+    private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
 
     // MARK: - Methods / Button Logic
 
-    func yesButtonClicked() {
-        didAnswer(isYes: true)
-    }
-
-    func noButtonClicked() {
-        didAnswer(isYes: false)
-    }
-
-    private func didAnswer(isYes: Bool) {
-        guard isInteractionAllowed else { return }
-        guard let currentQuestion = currentQuestion else { return }
+    func didAnswer(isYes: Bool) {
+        guard isInteractionAllowed, let currentQuestion else { return }
 
         let isCorrect = (currentQuestion.correctAnswer == isYes)
 
@@ -102,22 +96,22 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         isInteractionAllowed = false
     }
 
-    func didAnswer(isCorrectAnswer: Bool) {
+    private func didAnswer(isCorrectAnswer: Bool) {
         correctAnswers += isCorrectAnswer ? 1 : 0
     }
 
-    // MARK: - Methods / Quiz Logic
+    // MARK: - Private Methods / Quiz Logic
 
-    func showAnswerResult(isCorrect: Bool) {
+    private func showAnswerResult(isCorrect: Bool) {
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.showNextQuestionOrResults()
         }
     }
 
-    func showNextQuestionOrResults() {
+    private func showNextQuestionOrResults() {
         guard isLastQuestion() else {
             switchToNextQuestion()
             questionFactory?.requestNextQuestion()

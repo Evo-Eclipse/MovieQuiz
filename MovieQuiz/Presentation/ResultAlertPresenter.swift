@@ -33,16 +33,15 @@ final class ResultAlertPresenter {
     }
 }
 
+// Локальный enum
 enum AlertType {
     case gameResult
     case networkError
 
     var accessibilityIdentifier: String {
-        switch self {
-        case .gameResult:
-            return "Result Alert"
-        case .networkError:
-            return "Network Error Alert"
+        return switch self {
+        case .gameResult: "Result Alert"
+        case .networkError: "Network Error Alert"
         }
     }
 }
